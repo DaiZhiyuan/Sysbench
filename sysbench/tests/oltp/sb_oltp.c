@@ -595,10 +595,10 @@ void *oltp_cmd_prepare_one_table(void *arg)
   {
     /* Build query */
     if (args.auto_inc)
-      n = snprintf(query, query_len, "INSERT INTO %s(k, c, pad) VALUES ",
+      n = snprintf(query, query_len, "INSERT IGNORE INTO %s(k, c, pad) VALUES ",
                    table_name);
     else
-      n = snprintf(query, query_len, "INSERT INTO %s(id, k, c, pad) VALUES ",
+      n = snprintf(query, query_len, "INSERT IGNORE INTO %s(id, k, c, pad) VALUES ",
                    table_name);
     if (n >= query_len)
     {
@@ -2096,7 +2096,7 @@ int prepare_stmt_set_trx(oltp_stmt_set_t *set,
     return 1;
 
   /* Prepare the insert statement */
-  snprintf(query, MAX_QUERY_LEN, "INSERT INTO %s values(?,0,' ',"
+  snprintf(query, MAX_QUERY_LEN, "INSERT IGNORE INTO %s values(?,0,' ',"
            "'aaaaaaaaaaffffffffffrrrrrrrrrreeeeeeeeeeyyyyyyyyyy')",
            table_name);
   set->insert = db_prepare(conn, query);
@@ -2202,7 +2202,7 @@ int prepare_stmt_set_nontrx(oltp_stmt_set_t *set,
     return 1;
 
   /* Prepare the insert statement */
-  snprintf(query, MAX_QUERY_LEN, "INSERT INTO %s values(?,?,?,?)",
+  snprintf(query, MAX_QUERY_LEN, "INSERT IGNORE INTO %s values(?,?,?,?)",
            table_name);
   set->insert = db_prepare(conn, query);
   /*
