@@ -529,7 +529,7 @@ void *oltp_cmd_prepare_one_table(void *arg)
            "CREATE TABLE %s ("
            "id %s %s NOT NULL %s, "
            "k integer %s DEFAULT '0' NOT NULL, "
-           "c char(120) DEFAULT '' NOT NULL, "
+           "c varchar(120) DEFAULT '' NOT NULL, "
            "pad char(60) DEFAULT '' NOT NULL, "
            "%s"
            ") %s"
@@ -2241,6 +2241,8 @@ db_stmt_t *get_sql_statement_trx(sb_sql_query_t *query,
                                  oltp_stmt_set_t *stmt_set,
                                  unsigned int thread_id)
 {
+  int cur_length = 0;
+  int var_length = 0;
   db_stmt_t       *stmt = NULL;
   db_bind_t       binds[2];
   oltp_bind_set_t *buf = bind_bufs + thread_id;
@@ -2294,7 +2296,9 @@ db_stmt_t *get_sql_statement_trx(sb_sql_query_t *query,
         We have to bind non-index update data each time
         because of string parameter
       */
-      snprintf(buf->c, 120, "%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu",
+      snprintf(buf->c, 120, "%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu",
+               (unsigned long)sb_rnd(),
+               (unsigned long)sb_rnd(),
                (unsigned long)sb_rnd(),
                (unsigned long)sb_rnd(),
                (unsigned long)sb_rnd(),
@@ -2305,6 +2309,17 @@ db_stmt_t *get_sql_statement_trx(sb_sql_query_t *query,
                (unsigned long)sb_rnd(),
                (unsigned long)sb_rnd(),
                (unsigned long)sb_rnd());
+      cur_length = strlen(buf->c);
+      var_length = sb_rnd() % VARCHAR_LEN_VARIATION;
+      if(var_length%2 == 0){
+        if(cur_length>=(VARCHAR_LEN_DEFAULT - var_length)){
+          buf->c[VARCHAR_LEN_DEFAULT - var_length] = '\0';
+        }
+      }else{
+        if(cur_length>=(VARCHAR_LEN_DEFAULT + var_length)){
+        	buf->c[VARCHAR_LEN_DEFAULT + var_length] = '\0';
+        }
+      }
       buf->update_non_index.id = query->u.update_query.id;
       buf->c_len = strlen(buf->c);
       binds[0].type = DB_TYPE_CHAR;
@@ -2345,6 +2360,8 @@ db_stmt_t *get_sql_statement_nontrx(sb_sql_query_t *query,
                                     oltp_stmt_set_t *stmt_set,
                                     unsigned int thread_id)
 {
+  int var_length = 0;
+  int cur_length = 0;
   db_stmt_t       *stmt = NULL;
   db_bind_t       binds[4];
   oltp_bind_set_t *buf = bind_bufs + thread_id;
@@ -2366,7 +2383,9 @@ db_stmt_t *get_sql_statement_nontrx(sb_sql_query_t *query,
         We have to bind non-index update data each time
         because of string parameter
       */
-      snprintf(buf->c, 120, "%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu",
+      snprintf(buf->c, 120, "%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu",
+               (unsigned long)sb_rnd(),
+               (unsigned long)sb_rnd(),
                (unsigned long)sb_rnd(),
                (unsigned long)sb_rnd(),
                (unsigned long)sb_rnd(),
@@ -2377,6 +2396,17 @@ db_stmt_t *get_sql_statement_nontrx(sb_sql_query_t *query,
                (unsigned long)sb_rnd(),
                (unsigned long)sb_rnd(),
                (unsigned long)sb_rnd());
+      cur_length = strlen(buf->c);
+      var_length = sb_rnd() % VARCHAR_LEN_VARIATION;
+      if(var_length%2 == 0){
+        if(cur_length>=(VARCHAR_LEN_DEFAULT - var_length)){
+          buf->c[VARCHAR_LEN_DEFAULT - var_length] = '\0';
+        }
+      }else{
+        if(cur_length>=(VARCHAR_LEN_DEFAULT + var_length)){
+        	buf->c[VARCHAR_LEN_DEFAULT + var_length] = '\0';
+        }
+      }
       buf->update_non_index.id = query->u.update_query.id;
       buf->c_len = strlen(buf->c);
 
@@ -2407,7 +2437,9 @@ db_stmt_t *get_sql_statement_nontrx(sb_sql_query_t *query,
         because of string parameters
       */
       buf->range.to = query->u.insert_query.id;
-      snprintf(buf->c, 120, "%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu",
+      snprintf(buf->c, 120, "%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu-%lu",
+               (unsigned long)sb_rnd(),
+               (unsigned long)sb_rnd(),
                (unsigned long)sb_rnd(),
                (unsigned long)sb_rnd(),
                (unsigned long)sb_rnd(),
@@ -2418,6 +2450,17 @@ db_stmt_t *get_sql_statement_nontrx(sb_sql_query_t *query,
                (unsigned long)sb_rnd(),
                (unsigned long)sb_rnd(),
                (unsigned long)sb_rnd());
+      cur_length = strlen(buf->c);
+      var_length = sb_rnd() % VARCHAR_LEN_VARIATION;
+      if(var_length%2 == 0){
+        if(cur_length>=(VARCHAR_LEN_DEFAULT - var_length)){
+          buf->c[VARCHAR_LEN_DEFAULT - var_length] = '\0';
+        }
+      }else{
+        if(cur_length>=(VARCHAR_LEN_DEFAULT + var_length)){
+        	buf->c[VARCHAR_LEN_DEFAULT + var_length] = '\0';
+        }
+      }
       buf->c_len = strlen(buf->c);
       snprintf(buf->pad, 60, "%lu-%lu-%lu-%lu-%lu",
                (unsigned long)sb_rnd(),

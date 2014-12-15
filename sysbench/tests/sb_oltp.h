@@ -20,6 +20,12 @@
 
 #include "sb_list.h"
 
+#define VARCHAR_LEN_DEFAULT 100
+/* Varchar string value size variation ==> +-19 */
+/* VARCHAR_LEN_VARIATION must be less than VARCHAR_LEN_DEFAULT */
+/* VARCHAR_LEN_DEFAULT+VARCHAR_LEN_VARIATION must be less than 120 (varchar type column size) */
+#define VARCHAR_LEN_VARIATION 19
+
 /* SQL query types definiton */
 
 typedef enum
