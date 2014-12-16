@@ -129,6 +129,7 @@ typedef enum {
   RECONNECT_QUERY,
   RECONNECT_TRANSACTION,
   RECONNECT_RANDOM,
+  RECONNECT_NATURAL, /* this is not included in RANDOM */
   RECONNECT_LAST
 } reconnect_mode_t;
 
@@ -1291,6 +1292,15 @@ sb_request_t get_request_complex(int tid)
       add_reconnect_req(sql_req->queries);
   }
   
+  /* Add natural reconnect mode */
+  if (rmode == RECONNECT_NATURAL)
+  {
+    if (req_performed%5000 == 0 && sb_rnd()%2 == 0)
+    {
+      add_reconnect_req(sql_req->quries);
+    }
+  }
+
   /* return request */
   req_performed++;
   return sb_req;
@@ -1722,6 +1732,8 @@ int parse_arguments(void)
     args.reconnect_mode = RECONNECT_TRANSACTION;
   else if (!strcasecmp(s, "random"))
     args.reconnect_mode = RECONNECT_RANDOM;
+  else if (!strcasecmp(s, "natural"))
+	args.reconnect_mode = RECONNECT_NATURAL;
   else
   {
     log_text(LOG_FATAL, "Invalid value for --oltp-reconnect-mode: '%s'", s);
