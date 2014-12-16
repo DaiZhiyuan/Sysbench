@@ -32,6 +32,8 @@
 # include <strings.h>
 #endif
 
+/* Need for C_MODE_START & C_MODE_END for mysql 5.6 */
+#include <my_global.h>
 #include <mysql.h>
 #include <mysqld_error.h>
 

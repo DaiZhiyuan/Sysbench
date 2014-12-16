@@ -1297,7 +1297,7 @@ sb_request_t get_request_complex(int tid)
   {
     if (req_performed%5000 == 0 && sb_rnd()%2 == 0)
     {
-      add_reconnect_req(sql_req->quries);
+      add_reconnect_req(sql_req->queries);
     }
   }
 
